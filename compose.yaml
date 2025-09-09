@@ -1,0 +1,81 @@
+services:
+  db:
+    image: postgres:17
+    container_name: "postgresql"
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:?}
+      POSTGRES_USER: ${POSTGRES_USER:?}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test:
+        ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:?} -d ${POSTGRES_DB:?}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - db_network
+
+  backend:
+    build:
+      context: ./backend/Docker
+      dockerfile: Dockerfile
+    # image: "spark:latest"
+    container_name: "backend"
+    restart: unless-stopped
+    environment:
+      DB_NAME: ${POSTGRES_DB:?}
+      DB_USER: ${POSTGRES_USER:?}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:?}
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+      - maven-cache:/root/.m2
+    ports:
+      - "${BACKEND_PORT:?}:8080"
+    healthcheck:
+      test: "curl http://localhost:${BACKEND_PORT:?}/health"
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    command: "tail -f /dev/null"
+    networks:
+      - db_network
+
+  frontend:
+    # build:
+    #   context: ./frontend/Docker
+    #   dockerfile: Dockerfile
+    image: "node:24"
+    container_name: "frontend"
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    volumes:
+      - ./frontend:/app
+      - node-cache:/root/.npm
+    ports:
+      - "${FRONTEND_PORT:?}:4200"
+    environment:
+      - CHOKIDAR_USEPOLLING=true # hot reload sur Mac
+    command: "tail -f /dev/null"
+
+# ------------------------ #
+# Mettre en place un Nginx #
+# ------------------------ #
+
+networks:
+  db_network:
+    driver: bridge
+
+volumes:
+  pgdata:
+  maven-cache:
+  node-cache:
