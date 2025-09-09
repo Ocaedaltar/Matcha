@@ -4,7 +4,7 @@ _GREEN = \033[32m
 _RED   = \033[31m
 _ENDL  = \033[0m
 
-DB_NAME= db
+DB_NAME= postgresql
 
 .PHONY: all
 all:
