@@ -22,9 +22,8 @@ services:
 
   backend:
     build:
-      context: ./backend/Docker
-      dockerfile: Dockerfile
-    # image: "spark:latest"
+      context: ./backend
+      dockerfile: Docker/Dockerfile
     container_name: "backend"
     restart: unless-stopped
     environment:
@@ -44,14 +43,13 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
-    command: "tail -f /dev/null"
     networks:
       - db_network
 
   frontend:
-    # build:
-    #   context: ./frontend/Docker
-    #   dockerfile: Dockerfile
+    build:
+      context: ./frontend
+      dockerfile: Docker/Dockerfile
     image: "node:24"
     container_name: "frontend"
     restart: unless-stopped
@@ -65,7 +63,6 @@ services:
       - "${FRONTEND_PORT:?}:4200"
     environment:
       - CHOKIDAR_USEPOLLING=true # hot reload sur Mac
-    command: "tail -f /dev/null"
 
 # ------------------------ #
 # Mettre en place un Nginx #
