@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?}
     volumes:
       - pgdata:/var/lib/postgresql/data
-      - dbinit:/docker-entrypoint-initdb.d # TODO Dossier Init Postgresql ( NON FONCTIONNEL A REVOIR )
+      - ./dbinit:/docker-entrypoint-initdb.d:ro
     ports:
       - "5432:5432"
     healthcheck:

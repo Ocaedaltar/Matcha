@@ -21,7 +21,8 @@ re: fclean all
 
 .PHONY: clean
 clean:
-	@docker compose stop
+# - Suppression des volumes du projets 	
+	@docker compose down -v
 	@echo "$(_GREEN) Docker Container was stoped $(_ENDL)"
 
 .PHONY: fclean
