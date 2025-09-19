@@ -1,0 +1,13 @@
+<h1>Créer un compte</h1>
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <label>Email</label>
+  <input type="email" formControlName="email" />
+
+  <label>Mot de passe</label>
+  <input type="password" formControlName="password" />
+
+  <label>Confirmer mot de passe</label>
+  <input type="password" formControlName="confirmPassword" />
+
+  <button type="submit" [disabled]="form.invalid">S'inscrire</button>
+</form>

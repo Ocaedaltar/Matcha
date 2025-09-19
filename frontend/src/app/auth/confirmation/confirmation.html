@@ -1,0 +1,7 @@
+<h1>Confirmation</h1>
+<p *ngIf="token$ | async as token; else noToken">
+  Merci ! Votre compte est confirmé (token: {{ token }}).
+</p>
+<ng-template #noToken>
+  <p>Veuillez cliquer sur le lien de confirmation reçu par email.</p>
+</ng-template>
